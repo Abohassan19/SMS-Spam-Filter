@@ -1,17 +1,13 @@
-```
+```python
 from google.colab import drive
 drive.mount('/content/drive')
 ```
 
-    Go to this URL in a browser: https://accounts.google.com/o/oauth2/auth?client_id=947318989803-6bn6qk8qdgf4n4g3pfee6491hc0brc4i.apps.googleusercontent.com&redirect_uri=urn%3aietf%3awg%3aoauth%3a2.0%3aoob&response_type=code&scope=email%20https%3a%2f%2fwww.googleapis.com%2fauth%2fdocs.test%20https%3a%2f%2fwww.googleapis.com%2fauth%2fdrive%20https%3a%2f%2fwww.googleapis.com%2fauth%2fdrive.photos.readonly%20https%3a%2f%2fwww.googleapis.com%2fauth%2fpeopleapi.readonly
-    
-    Enter your authorization code:
-    ··········
-    Mounted at /content/drive
+    Drive already mounted at /content/drive; to attempt to forcibly remount, call drive.mount("/content/drive", force_remount=True).
 
 
 
-```
+```python
 # Used libraries
 import numpy as np
 import pandas as pd
@@ -41,13 +37,13 @@ warnings.filterwarnings('ignore')
 ```
 
 
-```
+```python
 # Download Natural Language Toolkit (run this cell once)
 nltk.download('all')
 ```
 
 
-```
+```python
 # Reading the SMS collection file
 
 sms = pd.read_csv('/content/drive/My Drive/Machine Learning/SMS Spam Filter/SMSSpamCollection', sep="\t", header=None,
@@ -55,7 +51,7 @@ sms = pd.read_csv('/content/drive/My Drive/Machine Learning/SMS Spam Filter/SMSS
 ```
 
 
-```
+```python
 sms.head()
 ```
 
@@ -117,7 +113,7 @@ sms.head()
 
 
 
-```
+```python
 # Data sample
 
 display(sms.head(n = 10))
@@ -207,7 +203,7 @@ print('--------------------------------------------------')
 
 
 
-```
+```python
 # Data info
 
 sms.info()
@@ -223,7 +219,7 @@ sms.info()
 
 
 
-```
+```python
 # Plotting the data distribution 
 
 sms["Label"].value_counts().plot(kind = 'pie', explode = [0, 0.1], figsize = (6, 6), autopct = '%1.2f%%')
@@ -233,11 +229,11 @@ plt.show()
 ```
 
 
-![png](SMS_Spam_Filter_files/SMS_Spam_Filter_7_0.png)
+![png](output_7_0.png)
 
 
 
-```
+```python
 # Inspecting top 10 SMS messages
 
 topMessages = sms.groupby("Message")["Label"].agg([len, np.max]).sort_values(by = "len", ascending = False).head(n = 10)
@@ -329,7 +325,7 @@ display(topMessages)
 
 
 
-```
+```python
 # Reomving stop words
 
 %%time
@@ -359,7 +355,7 @@ hamMessages.apply(extractHamWords)
 
 
 
-```
+```python
 # Visualizing spam WordCloud (more important words are bigger in size)
 
 spamWordCloud = WordCloud(width=600, height=400).generate(" ".join(spamWords))
@@ -371,11 +367,11 @@ plt.show()
 ```
 
 
-![png](SMS_Spam_Filter_files/SMS_Spam_Filter_10_0.png)
+![png](output_10_0.png)
 
 
 
-```
+```python
 # Visualizing ham WordCloud (more important words are bigger in size)
 
 hamWordCloud = WordCloud(width=600, height=400).generate(" ".join(hamWords))
@@ -387,11 +383,11 @@ plt.show()
 ```
 
 
-![png](SMS_Spam_Filter_files/SMS_Spam_Filter_11_0.png)
+![png](output_11_0.png)
 
 
 
-```
+```python
 # Cleaning the messages
 
 stemmer = SnowballStemmer("english")
@@ -490,7 +486,7 @@ sms.head(n = 10)
 
 
 
-```
+```python
 vectors = TfidfVectorizer(encoding="utf-8", strip_accents="unicode", stop_words="english")
 features = vectors.fit_transform(sms["Message"])
 print(features.shape)
@@ -500,7 +496,7 @@ print(features.shape)
 
 
 
-```
+```python
 for i in range(len(sms.Label)):
   if sms.Label[i] == "ham":
     sms.Label[i] = 0
@@ -511,7 +507,7 @@ X_train, X_test, y_train, y_test = train_test_split(features, sms.Label, test_si
 ```
 
 
-```
+```python
 print(X_train.shape, y_train)
 ```
 
@@ -530,7 +526,7 @@ print(X_train.shape, y_train)
 
 
 
-```
+```python
 # Searching for best parameters using GridSearch
 
 model = LogisticRegression(random_state=0)
@@ -550,7 +546,7 @@ print("The best parameters are %s with a score of %0.5f"
 
 
 
-```
+```python
 # Using best parameters to train a new model
 %%time
 X_train, X_test, y_train, y_test = train_test_split(features, sms["Label"], test_size = 0.2, random_state=0)
@@ -569,7 +565,7 @@ print(f'Training accuracy = {Train_accuracy*100:.3f}%, Testing accuracy = {Test_
 
 
 
-```
+```python
 # Trying different models
 
 from sklearn.linear_model import LogisticRegression
@@ -586,7 +582,7 @@ from sklearn.metrics import precision_score
 ```
 
 
-```
+```python
 # All paramaters are determined by trial and error
 
 svc = SVC(kernel='sigmoid', gamma=1.0)
@@ -602,7 +598,7 @@ clfs = {'SVC' : svc,'KN' : knc, 'NB': mnb, 'DT': dtc, 'RF': rfc, 'AdaBoost': abc
 ```
 
 
-```
+```python
 ################################################################################################
 ### Here, I'll be concenrned with the precision score as I don't want any ham messages to be ###
 #### misclassified as spam but I don't mind some spam messages to be missclassified as ham. ####
@@ -685,7 +681,7 @@ df
 
 
 
-```
+```python
 # Testing specific messages
 SMS1 = '[URGENT!] Your Mobile No 398174814449 was awarded a vacation'
 SMS2 = 'Hello my friend, how are you?'
@@ -693,7 +689,7 @@ SMS2 = 'Hello my friend, how are you?'
 ```
 
 
-```
+```python
 # Applying the same pre-processing and the pre-trained model
 SMS1_clean = cleanText(SMS1)
 SMS1_features = vectors.transform([SMS1_clean])
@@ -705,7 +701,7 @@ prediction2 = clf.predict(SMS2_features)
 ```
 
 
-```
+```python
 # Printing the prediction in terms of 'ham' or 'spam'
 class1 = 'spam' if prediction1 == 1 else 'ham'
 class2 = 'spam' if prediction2 == 1 else 'ham'
